@@ -100,6 +100,63 @@
         .animate-reveal {
             animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* ===================================================================== */
+        /* PENINGKATAN DESAIN BERANDA: PUSAT KATEGORI & HALAMAN GALERI LENGKAP   */
+        /* (Hanya pelengkap tampilan — tidak mengubah logika sistem)             */
+        /* ===================================================================== */
+
+        /* Kartu kategori di Beranda: mengangkat saat disentuh kursor */
+        .category-card {
+            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease, background-color 0.28s ease;
+            will-change: transform;
+        }
+        .category-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px -12px rgba(6, 14, 31, 0.22);
+        }
+        .category-card:active {
+            transform: translateY(-1px) scale(0.985);
+        }
+        .category-card.is-active {
+            box-shadow: 0 10px 26px -10px rgba(0, 68, 255, 0.35);
+        }
+
+        /* Chip filter (kategori / jenis berkas / sub-kategori) di halaman galeri */
+        .explorer-chip {
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .explorer-chip:hover {
+            transform: translateY(-1px);
+        }
+        .explorer-chip.is-dimmed {
+            opacity: 0.55;
+        }
+
+        /* Bilangan penghitung kecil pada kartu & chip */
+        .count-pill {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Garis aksen animasi pada bagian atas panel kategori */
+        @keyframes shimmerAccent {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .accent-flow {
+            background: linear-gradient(90deg, #0044FF, #00D2FF, #0044FF);
+            background-size: 200% 100%;
+            animation: shimmerAccent 6s linear infinite;
+        }
+
+        /* Scrollbar tipis untuk baris chip yang panjang */
+        .scrollbar-slim::-webkit-scrollbar {
+            height: 6px;
+        }
+        .scrollbar-slim::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
     </style>
 </head>
 <body class="bg-[#F8FAFC] text-slate-900 antialiased selection:bg-blue-600 selection:text-white min-h-screen flex flex-col">
@@ -367,6 +424,75 @@
                     </div>
                 </div>
 
+                <!-- ============================================================= -->
+                <!-- 1B. PUSAT KATEGORI & PENCARIAN CEPAT (DESAIN BARU BERANDA)    -->
+                <!-- Semua kategori tampil sebagai kartu pilihan — cukup klik,     -->
+                <!-- aset dalam kategori tersebut langsung muncul di dasbor bawah. -->
+                <!-- ============================================================= -->
+                <div id="dashboardCategoryCenterPanel" class="bg-white rounded-3xl border border-slate-200/90 shadow-card overflow-hidden">
+
+                    <!-- Kepala Panel: Judul + Kotak Pencarian Besar (obsidian-mesh) -->
+                    <div class="obsidian-mesh relative text-white">
+                        <div class="absolute top-0 inset-x-0 h-1 accent-flow"></div>
+                        <div class="w-full px-5 sm:px-7 py-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
+
+                            <div class="max-w-2xl">
+                                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-cyan-400/30 text-cyan-300 text-[11px] font-bold tracking-widest mb-2.5">
+                                    <i data-lucide="compass" class="w-3.5 h-3.5"></i>
+                                    <span>PUSAT KATEGORI &amp; PENCARIAN CEPAT</span>
+                                </span>
+                                <h2 class="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-snug">
+                                    Pilih Kategori, <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">Aset Langsung Tampil</span>
+                                </h2>
+                                <p class="text-slate-300 text-xs sm:text-sm mt-2 leading-relaxed">
+                                    Tidak perlu mencari satu per satu. Klik salah satu kartu kategori di bawah ini — seluruh aset dalam kategori tersebut langsung tersaring dan muncul di direktori dasbor, atau gunakan kotak pencarian untuk mencari nama aset, kode arsip, tag, maupun nama kategori.
+                                </p>
+                            </div>
+
+                            <!-- Kotak Pencarian Utama (Besar & Menonjol) -->
+                            <div class="w-full xl:w-[420px] flex-shrink-0">
+                                <label for="dashboardSearchInput" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+                                    Cari Aset di Seluruh Brankas
+                                </label>
+                                <div class="relative group">
+                                    <div class="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl asetku-gradient-bg flex items-center justify-center text-white shadow-md pointer-events-none">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <input type="text" id="dashboardSearchInput" oninput="renderDashboard()" placeholder="Ketik nama aset, kode (AST-...), tag, atau kategori..."
+                                        class="w-full pl-14 pr-11 py-3.5 rounded-2xl bg-white/10 border border-white/20 text-white text-sm font-medium placeholder-slate-400 backdrop-blur-md focus:bg-white focus:text-slate-900 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/20 outline-none transition-all">
+                                    <button type="button" onclick="clearDashboardSearch()" title="Bersihkan pencarian"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
+                                    <i data-lucide="zap" class="w-3 h-3 text-cyan-300"></i>
+                                    <span>Pencarian langsung tampil saat Anda mengetik — tanpa perlu menekan tombol.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid 12 Kartu Kategori (Semua Kategori Selalu Tampil) -->
+                    <div class="p-5 sm:p-6 bg-gradient-to-b from-slate-50/80 to-white">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-2 h-6 rounded-full asetku-gradient-bg"></span>
+                                <div>
+                                    <h3 class="font-display font-extrabold text-slate-900 text-sm sm:text-base">Semua Kategori Aset Tersedia</h3>
+                                    <p class="text-[11px] text-slate-500">12 kategori utama &amp; 72 sub-jenis — klik kartu untuk memilih kategori</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="filterDashboardByCategory('ALL')"
+                                class="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:text-blue-700 hover:border-blue-300 hover:bg-blue-50 transition-all">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                <span>Tampilkan Semua Kategori</span>
+                            </button>
+                        </div>
+                        <div id="dashboardCategoryCardsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3.5"></div>
+                    </div>
+                </div>
+
                 <!-- 2. STORAGE DISTRIBUTION & CATEGORY SUMMARY BAR -->
                 <div class="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-card">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
@@ -384,7 +510,7 @@
 
                 <!-- 3. SOROTAN ASET TERBARU (FEATURED EXECUTIVE SPOTLIGHT) -->
                 <div id="featuredSpotlightWrapper">
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-4 gap-3">
                         <div class="flex items-center gap-2.5">
                             <span class="w-2.5 h-7 rounded-full asetku-gradient-bg"></span>
                             <div>
@@ -392,25 +518,23 @@
                                 <p class="text-xs text-slate-500">Aset yang baru saja didaftarkan dengan pratinjau cepat &amp; unduhan langsung</p>
                             </div>
                         </div>
+                        <div id="featuredSeeAllSlot" class="flex-shrink-0"></div>
                     </div>
                     <div id="featuredAssetsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                 </div>
 
-                <!-- 4. FILTER BAR, DYNAMIC CATEGORY TABS & VIEW SWITCHER -->
-                <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-card space-y-5">
+                <!-- 4. DIREKTORI ASET TERPILIH (FILTER KATEGORI + MODE TAMPILAN) -->
+                <div id="dashboardDirectoryPanel" class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-card space-y-5 scroll-mt-24">
                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         <div>
-                            <h2 class="font-display text-xl font-extrabold text-slate-900">Eksplorasi Seluruh Brankas Aset</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Filter berdasarkan kategori dinamis, pencarian judul/tag, atau ubah mode tampilan.</p>
+                            <div class="flex items-center gap-2.5 mb-1">
+                                <span class="w-2.5 h-7 rounded-full asetku-gradient-bg"></span>
+                                <h2 id="dashboardDirectoryTitle" class="font-display text-xl font-extrabold text-slate-900">Direktori Aset Terpilih</h2>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Hasil saringan kategori &amp; pencarian — maksimal 6 aset ditampilkan di beranda, sisanya dibuka di halaman galeri lengkap.</p>
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3">
-                            <div class="relative flex-grow sm:flex-grow-0 sm:w-64">
-                                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                                <input type="text" id="dashboardSearchInput" oninput="renderDashboard()" placeholder="Cari judul, kode, tag..." 
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all">
-                            </div>
-
                             <select id="dashboardSortSelect" onchange="renderDashboard()" 
                                 class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700 focus:bg-white focus:border-blue-500 outline-none">
                                 <option value="newest">Urutkan: Terbaru</option>
@@ -445,7 +569,9 @@
                             <p class="text-xs text-slate-500">Tampilan khusus aset multimedia (Foto, Desain, Video, dan Musik) yang tersimpan</p>
                         </div>
                     </div>
-                    <div id="mediaGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+                    <div id="mediaGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+                    <!-- Kalimat ajakan "Lihat Semua" muncul otomatis di sini bila koleksi media lebih dari 6 -->
+                    <div id="mediaGallerySeeAllBar"></div>
                 </div>
 
             </div>
@@ -908,6 +1034,209 @@
             </div>
         </section>
 
+        <!-- ================================================================= -->
+        <!-- HALAMAN BARU (BUKAN BAGIAN DAFTAR ISI MENU):                      -->
+        <!-- PUSAT GALERI & JELAJAH KATEGORI LENGKAP                            -->
+        <!-- Halaman ini TIDAK muncul di navigasi atas; hanya terbuka saat      -->
+        <!-- pengguna mengeklik "Lihat Semua Aset" di Beranda.                  -->
+        <!-- ================================================================= -->
+        <section id="section-explorer" class="hidden animate-reveal w-full">
+
+            <!-- Hero Header Halaman Galeri (Gaya Eksekutif Menyeluruh) -->
+            <div class="obsidian-mesh text-white border-b border-slate-800 w-full">
+                <div class="w-full px-4 sm:px-8 lg:px-12 py-8 sm:py-10">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+
+                        <div class="max-w-4xl">
+                            <!-- Breadcrumb Navigasi Halaman -->
+                            <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 mb-3.5">
+                                <button onclick="closeCategoryExplorer()" class="inline-flex items-center gap-1 hover:text-cyan-300 transition-colors">
+                                    <i data-lucide="home" class="w-3 h-3"></i>
+                                    <span>Beranda</span>
+                                </button>
+                                <i data-lucide="chevron-right" class="w-3 h-3 text-slate-600"></i>
+                                <span class="text-cyan-300">Pusat Galeri &amp; Kategori Lengkap</span>
+                            </nav>
+
+                            <div class="flex items-start gap-4">
+                                <div id="explorerHeroIconBox" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl asetku-gradient-bg flex items-center justify-center text-white shadow-glow flex-shrink-0">
+                                    <i data-lucide="layout-grid" class="w-7 h-7 sm:w-8 sm:h-8"></i>
+                                </div>
+                                <div>
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-cyan-400/30 text-cyan-300 text-[11px] font-semibold tracking-widest mb-2">
+                                        <i data-lucide="gallery-horizontal-end" class="w-3.5 h-3.5"></i>
+                                        <span>HALAMAN GALERI PENUH — SEMUA KATEGORI &amp; JENIS ASET</span>
+                                    </span>
+                                    <h1 id="explorerHeroTitle" class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                                        Pusat Galeri &amp; <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">Jelajah Kategori Lengkap</span>
+                                    </h1>
+                                    <p id="explorerHeroDesc" class="text-slate-300 text-sm sm:text-base mt-2.5 leading-relaxed">
+                                        Jelajahi seluruh aset digital dalam brankas tanpa batasan tampilan. Gunakan pencarian, pilih kategori, sub-kategori, atau jenis berkas — semua tersaring langsung di halaman ini.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kartu Statistik Ringkas + Tombol Kembali -->
+                        <div class="flex flex-col gap-3 self-start lg:self-auto w-full sm:w-auto sm:min-w-[240px]">
+                            <div class="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 backdrop-blur-md">
+                                <div class="grid grid-cols-3 gap-3 text-center">
+                                    <div>
+                                        <p id="explorerStatTotalAssets" class="font-display text-xl sm:text-2xl font-extrabold text-white leading-none">0</p>
+                                        <p class="text-[10px] uppercase tracking-wider text-slate-400 mt-1.5">Total Aset</p>
+                                    </div>
+                                    <div class="border-x border-white/10">
+                                        <p id="explorerStatTotalCategories" class="font-display text-xl sm:text-2xl font-extrabold text-cyan-300 leading-none">0</p>
+                                        <p class="text-[10px] uppercase tracking-wider text-slate-400 mt-1.5">Kategori</p>
+                                    </div>
+                                    <div>
+                                        <p id="explorerStatTotalSize" class="font-display text-xl sm:text-2xl font-extrabold text-white leading-none">0 B</p>
+                                        <p class="text-[10px] uppercase tracking-wider text-slate-400 mt-1.5">Kapasitas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="closeCategoryExplorer()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-sm font-semibold text-white transition-all">
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                                <span>Kembali ke Beranda</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ruang Kerja Galeri Lengkap -->
+            <div class="w-full px-4 sm:px-8 lg:px-12 py-8 space-y-6">
+
+                <!-- ========================================================= -->
+                <!-- PANEL KENDALI FILTER: PENCARIAN + SEMUA JENIS KATEGORI    -->
+                <!-- ========================================================= -->
+                <div class="bg-white rounded-3xl border border-slate-200/90 shadow-card overflow-hidden">
+
+                    <!-- Baris Pencarian Besar + Pengurutan + Mode Tampilan -->
+                    <div class="obsidian-mesh text-white px-5 sm:px-7 py-6">
+                        <div class="flex flex-col xl:flex-row xl:items-end gap-4 xl:justify-between">
+                            <div class="flex-grow w-full xl:max-w-2xl">
+                                <label for="explorerSearchInput" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+                                    Pencarian Super Lengkap (Judul, Kode, Tag, Sub-Kategori, Nama Berkas)
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl asetku-gradient-bg flex items-center justify-center text-white shadow-md pointer-events-none">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </div>
+                                    <input type="text" id="explorerSearchInput" oninput="handleExplorerSearchInput()" placeholder="Ketik apa saja untuk mencari di seluruh aset halaman ini..."
+                                        class="w-full pl-14 pr-11 py-3.5 rounded-2xl bg-white/10 border border-white/20 text-white text-sm font-medium placeholder-slate-400 backdrop-blur-md focus:bg-white focus:text-slate-900 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/20 outline-none transition-all">
+                                    <button type="button" onclick="clearExplorerSearch()" title="Bersihkan pencarian"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-3">
+                                <select id="explorerSortSelect" onchange="handleExplorerSortChange(this.value)"
+                                    class="px-3.5 py-3 rounded-xl bg-white/10 border border-white/20 text-sm font-medium text-white focus:bg-white focus:text-slate-900 focus:border-cyan-400 outline-none backdrop-blur-md">
+                                    <option value="newest">Urutkan: Terbaru</option>
+                                    <option value="oldest">Urutkan: Terlama</option>
+                                    <option value="name_asc">Nama (A - Z)</option>
+                                    <option value="name_desc">Nama (Z - A)</option>
+                                    <option value="size_desc">Ukuran Terbesar</option>
+                                    <option value="size_asc">Ukuran Terkecil</option>
+                                </select>
+
+                                <div class="inline-flex rounded-xl bg-white/10 p-1 border border-white/20 backdrop-blur-md">
+                                    <button id="explorerViewGridBtn" onclick="setExplorerViewMode('grid')" title="Tampilan Galeri"
+                                        class="p-2.5 rounded-lg asetku-gradient-bg text-white shadow-sm transition-all">
+                                        <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                                    </button>
+                                    <button id="explorerViewTableBtn" onclick="setExplorerViewMode('table')" title="Tampilan Tabel Direktori"
+                                        class="p-2.5 rounded-lg text-slate-300 hover:text-white transition-all">
+                                        <i data-lucide="table-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Baris Chip: Jenis Berkas (Media Kind) -->
+                    <div class="px-5 sm:px-7 pt-5 pb-1 border-t border-slate-100">
+                        <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2.5 flex items-center gap-1.5">
+                            <i data-lucide="shapes" class="w-3.5 h-3.5 text-blue-600"></i>
+                            <span>Jenis Berkas Aset</span>
+                        </p>
+                        <div id="explorerMediaKindChips" class="flex flex-wrap gap-2 pb-3"></div>
+                    </div>
+
+                    <!-- Baris Chip: Kategori Utama (Semua 12 Kategori Selalu Tampil) -->
+                    <div class="px-5 sm:px-7 pt-1 pb-1 border-t border-slate-100 bg-slate-50/60">
+                        <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2.5 flex items-center gap-1.5 pt-2">
+                            <i data-lucide="folder-kanban" class="w-3.5 h-3.5 text-blue-600"></i>
+                            <span>Semua Kategori Utama — Klik untuk Memilih</span>
+                        </p>
+                        <div id="explorerCategoryChips" class="flex flex-wrap gap-2 pb-3"></div>
+                    </div>
+
+                    <!-- Baris Chip: Sub-Kategori Spesifik (Kontekstual) -->
+                    <div id="explorerSubCategoryPanel" class="hidden px-5 sm:px-7 pt-1 pb-4 border-t border-slate-100">
+                        <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2.5 flex items-center gap-1.5 pt-2">
+                            <i data-lucide="tags" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span>Sub-Jenis Spesifik dalam Kategori <span id="explorerSubCategoryCatLabel" class="text-blue-700 normal-case tracking-normal"></span></span>
+                        </p>
+                        <div id="explorerSubCategoryChips" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Ringkasan Filter Aktif + Tombol Reset -->
+                    <div class="px-5 sm:px-7 py-4 border-t border-slate-100 bg-gradient-to-r from-blue-50/70 via-white to-cyan-50/50">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div id="explorerActiveFilterSummary" class="flex flex-wrap items-center gap-2 text-xs text-slate-600"></div>
+                            <button onclick="resetExplorerFilters()"
+                                class="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 transition-all">
+                                <i data-lucide="filter-x" class="w-3.5 h-3.5"></i>
+                                <span>Reset Semua Filter</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Baris Info Hasil Saringan -->
+                <div id="explorerResultMeta" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1"></div>
+
+                <!-- Wadah Hasil: Mode Galeri (Grid) -->
+                <div id="explorerAssetsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+
+                <!-- Wadah Hasil: Mode Tabel Direktori -->
+                <div id="explorerAssetsTable" class="hidden"></div>
+
+                <!-- Status Kosong (Tidak Ada Hasil) -->
+                <div id="explorerEmptyState" class="hidden bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center">
+                    <div class="w-20 h-20 mx-auto rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400 mb-5">
+                        <i data-lucide="search-x" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="font-display font-extrabold text-slate-900 text-lg">Tidak Ada Aset yang Cocok</h3>
+                    <p class="text-sm text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
+                        Kombinasi filter pencarian, kategori, atau jenis berkas saat ini tidak menemukan aset apa pun. Coba longgarkan filter atau reset semuanya untuk melihat seluruh brankas.
+                    </p>
+                    <button onclick="resetExplorerFilters()" class="mt-6 px-5 py-2.5 rounded-xl asetku-gradient-bg text-white text-xs font-bold shadow-md inline-flex items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        <span>Reset Semua Filter</span>
+                    </button>
+                </div>
+
+                <!-- Tombol Muat Lebih Banyak (Batch 12 Aset per Klik) -->
+                <div id="explorerLoadMoreWrap" class="hidden pt-2 pb-4 text-center">
+                    <div class="max-w-xl mx-auto rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-cyan-50 p-6">
+                        <p id="explorerLoadMoreText" class="font-display font-bold text-slate-900 text-sm sm:text-base"></p>
+                        <p class="text-xs text-slate-500 mt-1">Koleksi halaman penuh ditampilkan secara bertahap agar tetap ringan dan cepat.</p>
+                        <button onclick="explorerLoadMore()"
+                            class="mt-4 px-6 py-3 rounded-2xl asetku-gradient-bg text-white text-sm font-bold shadow-lg shadow-blue-600/25 hover:-translate-y-0.5 transition-all inline-flex items-center gap-2">
+                            <i data-lucide="chevrons-down" class="w-4 h-4"></i>
+                            <span>Muat Lebih Banyak Aset</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
     </main>
 
     <!-- ===================================================================== -->
@@ -1166,6 +1495,49 @@
         let selectedVaultAssetIds = new Set(); // Multi-select checkboxes in Page 3
         let activeObjectUrls = []; // Track object URLs for clean cache purging
 
+        // ---------------------------------------------------------------------
+        // STATE TAMBAHAN (DESAIN BARU): BATAS TAMPIL BERANDA & HALAMAN GALERI
+        // Beranda hanya menampilkan maksimal 6 aset per saringan. Jika lebih
+        // dari 6, muncul kalimat ajakan "Lihat Semua Aset" yang membuka
+        // HALAMAN BARU (section-explorer) — bukan bagian daftar isi menu.
+        // ---------------------------------------------------------------------
+        const DASHBOARD_VISIBLE_LIMIT = 6;          // Batas kartu aset di Beranda
+        const MEDIA_GALLERY_VISIBLE_LIMIT = 6;      // Batas galeri media di Beranda
+        const EXPLORER_BATCH_SIZE = 12;             // Jumlah aset per klik "Muat Lebih Banyak"
+
+        let explorerState = {
+            isOpen: false,                 // Apakah halaman galeri sedang terbuka
+            categoryId: 'ALL',             // Filter kategori utama ('ALL' = semua)
+            mediaKind: 'ALL',              // Filter jenis berkas ('MEDIA' = foto+video+audio)
+            subCategory: 'ALL',            // Filter sub-kategori spesifik
+            searchQuery: '',               // Kata kunci pencarian di halaman galeri
+            sortBy: 'newest',              // Mode pengurutan
+            viewMode: 'grid',              // 'grid' (galeri) | 'table' (direktori)
+            visibleCount: EXPLORER_BATCH_SIZE // Berapa aset yang sudah ditampilkan
+        };
+
+        // Daftar pilihan "Jenis Berkas" pada halaman galeri lengkap
+        const EXPLORER_MEDIA_KINDS = [
+            { id: 'ALL',       label: 'Semua Jenis Berkas',   icon: 'layers' },
+            { id: 'MEDIA',     label: 'Foto, Video & Musik',  icon: 'sliders-horizontal' },
+            { id: 'image',     label: 'Gambar / Foto',        icon: 'image' },
+            { id: 'video',     label: 'Video / Film',         icon: 'film' },
+            { id: 'audio',     label: 'Audio / Musik',        icon: 'music' },
+            { id: 'pdf',       label: 'Dokumen PDF',          icon: 'file-text' },
+            { id: 'text',      label: 'Teks & Data',          icon: 'file-code' },
+            { id: 'document',  label: 'Berkas Lainnya',       icon: 'folder-check' }
+        ];
+
+        // Label ramah untuk setiap jenis berkas (dipakai pada ringkasan filter)
+        const MEDIA_KIND_LABELS = {
+            image: 'Gambar / Foto',
+            video: 'Video / Film',
+            audio: 'Audio / Musik',
+            pdf: 'Dokumen PDF',
+            text: 'Teks & Data',
+            document: 'Berkas Lainnya'
+        };
+
         const DB_NAME = 'AsetkuVaultDB';
         const DB_VERSION = 1;
         const STORE_NAME = 'assets';
@@ -1262,6 +1634,13 @@
         // 3. NAVIGATION & UI HELPERS (3 MAIN SECTIONS)
         // =========================================================================
         function switchMenu(menuName) {
+            // Halaman galeri lengkap (section-explorer) BUKAN bagian daftar isi
+            // menu utama — selalu disembunyikan kembali saat pengguna berpindah
+            // ke salah satu dari 3 menu utama.
+            const explorerSectionEl = document.getElementById('section-explorer');
+            if (explorerSectionEl) explorerSectionEl.classList.add('hidden');
+            explorerState.isOpen = false;
+
             const sections = {
                 dashboard: document.getElementById('section-dashboard'),
                 upload: document.getElementById('section-upload'),
@@ -1646,6 +2025,8 @@
             renderDistributionBar(uniqueCategories);
             renderFeaturedSpotlight();
             renderDynamicCategoryTabs(uniqueCategories);
+            renderDashboardCategoryCards();   // Desain baru: 12 kartu kategori selalu tampil di Pusat Kategori
+            updateDashboardDirectoryTitle();  // Desain baru: judul direktori mengikuti kategori terpilih
 
             const searchQuery = (document.getElementById('dashboardSearchInput').value || '').toLowerCase();
             const sortBy = document.getElementById('dashboardSortSelect').value;
@@ -1667,6 +2048,18 @@
             else if (sortBy === 'size_desc') filtered.sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0));
 
             const displayContainer = document.getElementById('mainAssetsDisplayContainer');
+
+            // -------------------------------------------------------------
+            // BATAS TAMPILAN BERANDA: MAKSIMAL 6 ASET PER SARINGAN
+            // Jika hasil saringan lebih dari 6, di bawah galeri muncul
+            // kalimat ajakan (seperti lazimnya di aplikasi galeri):
+            // "Menampilkan 6 dari N aset ... — Lihat Semua Aset".
+            // Saat diklik, HALAMAN BARU galeri lengkap akan terbuka.
+            // -------------------------------------------------------------
+            const totalMatches = filtered.length;
+            const visibleAssets = filtered.slice(0, DASHBOARD_VISIBLE_LIMIT);
+            const seeAllBarHTML = buildDashboardSeeAllBar(totalMatches, visibleAssets.length);
+
             if (filtered.length === 0) {
                 displayContainer.innerHTML = `
                     <div class="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
@@ -1676,13 +2069,153 @@
                     </div>
                 `;
             } else if (currentDashboardViewMode === 'grid') {
-                displayContainer.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${filtered.map(renderAssetCardHTML).join('')}</div>`;
+                displayContainer.innerHTML =
+                    `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${visibleAssets.map(renderAssetCardHTML).join('')}</div>` +
+                    seeAllBarHTML;
             } else {
-                displayContainer.innerHTML = renderExecutiveTableHTML(filtered);
+                displayContainer.innerHTML =
+                    renderExecutiveTableHTML(visibleAssets) +
+                    seeAllBarHTML;
             }
 
             renderMultimediaShowcase();
             lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // DESAIN BARU BERANDA: JUDUL DIREKTORI DINAMIS
+        // -------------------------------------------------------------------------
+        function updateDashboardDirectoryTitle() {
+            const titleEl = document.getElementById('dashboardDirectoryTitle');
+            if (!titleEl) return;
+
+            const searchEl = document.getElementById('dashboardSearchInput');
+            const hasSearch = searchEl && searchEl.value.trim().length > 0;
+
+            if (currentDashboardCategoryFilter === 'ALL' && !hasSearch) {
+                titleEl.textContent = 'Direktori Seluruh Aset Brankas';
+            } else if (currentDashboardCategoryFilter === 'ALL' && hasSearch) {
+                titleEl.textContent = 'Hasil Pencarian Aset';
+            } else {
+                const catMeta = getCategoryMeta(currentDashboardCategoryFilter);
+                titleEl.textContent = `Kategori: ${catMeta.shortName}`;
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // DESAIN BARU BERANDA: KALIMAT "LIHAT SEMUA ASET" DI BAWAH GALERI
+        // Muncul otomatis hanya ketika jumlah aset lebih dari 6 (batas beranda).
+        // -------------------------------------------------------------------------
+        function buildDashboardSeeAllBar(totalMatches, shownCount) {
+            if (totalMatches <= DASHBOARD_VISIBLE_LIMIT) return '';
+
+            const remaining = totalMatches - shownCount;
+            const catLabel = currentDashboardCategoryFilter === 'ALL'
+                ? 'seluruh brankas'
+                : `kategori "${getCategoryMeta(currentDashboardCategoryFilter).shortName}"`;
+
+            return `
+                <div class="mt-6 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-cyan-50 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-reveal">
+                    <div class="flex items-center gap-3.5 text-center sm:text-left">
+                        <div class="w-11 h-11 rounded-2xl asetku-gradient-bg text-white flex items-center justify-center shadow-glow flex-shrink-0">
+                            <i data-lucide="images" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="font-display font-bold text-slate-900 text-sm sm:text-base">
+                                Menampilkan ${shownCount} dari ${totalMatches} aset di ${catLabel}
+                            </p>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Masih ada <span class="font-bold text-blue-700">${remaining} aset lainnya</span> yang belum tampil — buka halaman galeri lengkap untuk melihat semuanya sekaligus.
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="openCategoryExplorer(currentDashboardCategoryFilter)"
+                        class="px-5 py-3 rounded-2xl asetku-gradient-bg text-white text-sm font-bold shadow-lg shadow-blue-600/25 hover:-translate-y-0.5 transition-all flex items-center gap-2 flex-shrink-0">
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                        <span>Lihat Semua Aset</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // -------------------------------------------------------------------------
+        // DESAIN BARU BERANDA: 12 KARTU KATEGORI DI PUSAT KATEGORI
+        // Semua kategori (termasuk yang masih kosong) selalu tampil sebagai
+        // pilihan — pengguna cukup klik, tidak perlu mencari satu per satu.
+        // -------------------------------------------------------------------------
+        function renderDashboardCategoryCards() {
+            const grid = document.getElementById('dashboardCategoryCardsGrid');
+            if (!grid) return;
+
+            grid.innerHTML = ASSET_CATEGORIES.map(cat => {
+                const items = assetsStore.filter(a => a.categoryId === cat.id);
+                const count = items.length;
+                const bytes = items.reduce((acc, a) => acc + (a.fileSize || 0), 0);
+                const isActive = currentDashboardCategoryFilter === cat.id;
+                const hasAssets = count > 0;
+
+                return `
+                    <button type="button" onclick="selectDashboardCategoryFromCards('${cat.id}')"
+                        class="category-card ${isActive ? 'is-active' : ''} relative text-left p-3.5 rounded-2xl border ${
+                            isActive
+                            ? 'border-blue-600 bg-blue-50/80 ring-2 ring-blue-600/25 shadow-md'
+                            : hasAssets
+                                ? 'border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/40'
+                                : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100'
+                        }">
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm ${hasAssets ? '' : 'opacity-40 grayscale'}"
+                                style="background-color: ${cat.color};">
+                                <i data-lucide="${cat.icon}" class="w-5 h-5"></i>
+                            </div>
+                            <span class="count-pill px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold ${
+                                hasAssets ? 'bg-slate-900 text-cyan-300' : 'bg-slate-200 text-slate-500'
+                            }">${count}</span>
+                        </div>
+                        <p class="font-display font-bold text-[13px] leading-snug ${hasAssets ? 'text-slate-900' : 'text-slate-400'}">
+                            ${cat.shortName}
+                        </p>
+                        <p class="text-[10px] mt-1 leading-relaxed ${hasAssets ? 'text-slate-500' : 'text-slate-400'}">
+                            ${hasAssets ? `${count} aset • ${formatBytes(bytes)}` : 'Belum ada aset'}
+                        </p>
+                        ${isActive ? `
+                            <span class="absolute -top-2 -right-2 px-2 py-0.5 rounded-full asetku-gradient-bg text-white text-[9px] font-bold shadow-md">
+                                AKTIF
+                            </span>
+                        ` : ''}
+                    </button>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // DESAIN BARU BERANDA: PILIH KATEGORI DARI KARTU (LANGSUNG TERFILTER + GULIR)
+        // -------------------------------------------------------------------------
+        function selectDashboardCategoryFromCards(catId) {
+            filterDashboardByCategory(catId);
+
+            // Gulir halus ke direktori aset agar pengguna langsung melihat hasilnya
+            const target = document.getElementById('dashboardDirectoryPanel');
+            if (target) {
+                setTimeout(() => {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 80);
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // DESAIN BARU BERANDA: BERSIHKAN KOTAK PENCARIAN UTAMA
+        // -------------------------------------------------------------------------
+        function clearDashboardSearch() {
+            const input = document.getElementById('dashboardSearchInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            renderDashboard();
         }
 
         function renderDistributionBar(uniqueCategoryIds) {
@@ -1713,6 +2246,25 @@
         function renderFeaturedSpotlight() {
             const grid = document.getElementById('featuredAssetsGrid');
             const latestThree = assetsStore.slice(0, 3);
+
+            // Desain baru: tautan "Lihat Semua Aset" di pojok kanan Sorotan —
+            // praktik umum aplikasi galeri agar pengguna bisa langsung membuka
+            // halaman galeri lengkap tanpa mencari satu per satu.
+            const seeAllSlot = document.getElementById('featuredSeeAllSlot');
+            if (seeAllSlot) {
+                if (assetsStore.length > 3) {
+                    seeAllSlot.innerHTML = `
+                        <button onclick="openCategoryExplorer('ALL')"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-blue-700 hover:border-blue-300 hover:bg-blue-50 transition-all">
+                            <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                            <span>Lihat Semua ${assetsStore.length} Aset</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    `;
+                } else {
+                    seeAllSlot.innerHTML = '';
+                }
+            }
 
             grid.innerHTML = latestThree.map(asset => {
                 const catMeta = getCategoryMeta(asset.categoryId);
@@ -1940,15 +2492,25 @@
         function renderMultimediaShowcase() {
             const section = document.getElementById('mediaGallerySection');
             const grid = document.getElementById('mediaGalleryGrid');
+            const seeAllBar = document.getElementById('mediaGallerySeeAllBar');
             const mediaAssets = assetsStore.filter(a => ['image', 'video', 'audio'].includes(a.mediaKind));
 
             if (mediaAssets.length === 0) {
                 section.classList.add('hidden');
+                if (seeAllBar) seeAllBar.innerHTML = '';
                 return;
             }
 
             section.classList.remove('hidden');
-            grid.innerHTML = mediaAssets.slice(0, 8).map(asset => {
+
+            // -------------------------------------------------------------
+            // DESAIN BARU: GALERI MEDIA BERANDA MAKSIMAL 6 KOLEKSI
+            // Jika foto/video/musik lebih dari 6, di bawah galeri muncul
+            // kalimat ajakan "Lihat Semua Galeri" yang membuka HALAMAN BARU
+            // dengan filter otomatis "Foto, Video & Musik".
+            // -------------------------------------------------------------
+            const visibleMedia = mediaAssets.slice(0, MEDIA_GALLERY_VISIBLE_LIMIT);
+            grid.innerHTML = visibleMedia.map(asset => {
                 const visual = buildThumbnailVisual(asset, 'h-48');
                 return `
                     <div onclick="openAssetModal('${asset.id}')" class="group relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-card cursor-pointer">
@@ -1961,6 +2523,562 @@
                     </div>
                 `;
             }).join('');
+
+            if (seeAllBar) {
+                if (mediaAssets.length > MEDIA_GALLERY_VISIBLE_LIMIT) {
+                    const hiddenMedia = mediaAssets.length - MEDIA_GALLERY_VISIBLE_LIMIT;
+                    seeAllBar.innerHTML = `
+                        <div class="rounded-2xl border border-cyan-200 bg-gradient-to-r from-cyan-50 via-white to-blue-50 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-reveal">
+                            <div class="flex items-center gap-3.5 text-center sm:text-left">
+                                <div class="w-11 h-11 rounded-2xl bg-slate-900 text-cyan-300 flex items-center justify-center shadow-md flex-shrink-0">
+                                    <i data-lucide="gallery-horizontal-end" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-display font-bold text-slate-900 text-sm sm:text-base">
+                                        Menampilkan ${MEDIA_GALLERY_VISIBLE_LIMIT} dari ${mediaAssets.length} koleksi visual, audio &amp; sinema
+                                    </p>
+                                    <p class="text-xs text-slate-500 mt-0.5">
+                                        Masih ada <span class="font-bold text-cyan-700">${hiddenMedia} koleksi media lainnya</span> — klik untuk membuka halaman galeri lengkap.
+                                    </p>
+                                </div>
+                            </div>
+                            <button onclick="openCategoryExplorer('ALL', 'MEDIA')"
+                                class="px-5 py-3 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2 flex-shrink-0">
+                                <i data-lucide="gallery-horizontal-end" class="w-4 h-4"></i>
+                                <span>Lihat Semua Galeri</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    seeAllBar.innerHTML = '';
+                }
+            }
+        }
+
+        // =========================================================================
+        // 5B. HALAMAN BARU: PUSAT GALERI & JELAJAH KATEGORI LENGKAP
+        // --------------------------------------------------------------------------
+        // Halaman ini TIDAK terdaftar pada daftar isi menu navigasi atas (yang
+        // tetap berisi 3 menu utama). Halaman hanya terbuka melalui:
+        //   1. Tombol "Lihat Semua Aset" di bawah galeri beranda (saat aset > 6)
+        //   2. Tautan "Lihat Semua N Aset" pada kartu Sorotan Aset Terbaru
+        //   3. Tombol "Lihat Semua Galeri" di bawah galeri visual/audio/sinema
+        // Seluruh logika sistem asli (IndexedDB, modal, unduhan, hapus) tetap
+        // digunakan apa adanya — halaman ini hanya lapisan tampilan baru.
+        // =========================================================================
+
+        // -------------------------------------------------------------------------
+        // Menetralkan tampilan 3 tombol menu utama saat halaman galeri terbuka,
+        // agar tidak ada menu yang terlihat "aktif" (karena halaman ini memang
+        // bukan bagian dari daftar isi menu).
+        // -------------------------------------------------------------------------
+        function setMainNavNeutral() {
+            const inactiveClass = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 text-slate-300 hover:text-white hover:bg-white/5';
+            ['navBtn-dashboard', 'navBtn-upload', 'navBtn-vault'].forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) btn.className = inactiveClass;
+            });
+        }
+
+        // -------------------------------------------------------------------------
+        // MEMBUKA HALAMAN GALERI LENGKAP (HALAMAN BARU)
+        // catId      : 'ALL' atau id salah satu kategori dari ASSET_CATEGORIES
+        // mediaKind  : 'ALL' | 'MEDIA' | 'image' | 'video' | 'audio' | 'pdf' | 'text' | 'document'
+        // -------------------------------------------------------------------------
+        function openCategoryExplorer(catId = 'ALL', mediaKind = 'ALL') {
+            // 1. Reset & isi state halaman galeri
+            explorerState.isOpen = true;
+            explorerState.categoryId = ASSET_CATEGORIES.some(c => c.id === catId) ? catId : 'ALL';
+            explorerState.mediaKind = EXPLORER_MEDIA_KINDS.some(m => m.id === mediaKind) ? mediaKind : 'ALL';
+            explorerState.subCategory = 'ALL';
+            explorerState.sortBy = 'newest';
+            explorerState.viewMode = 'grid';
+            explorerState.visibleCount = EXPLORER_BATCH_SIZE;
+
+            // 2. Warisi kata kunci pencarian yang sedang aktif di beranda (jika ada)
+            const dashboardSearchEl = document.getElementById('dashboardSearchInput');
+            explorerState.searchQuery = dashboardSearchEl ? dashboardSearchEl.value.trim() : '';
+
+            // 3. Sembunyikan ketiga halaman menu utama & tampilkan halaman galeri
+            ['section-dashboard', 'section-upload', 'section-vault'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            setMainNavNeutral();
+            document.getElementById('section-explorer').classList.remove('hidden');
+
+            // 4. Sinkronkan kontrol (pencarian, urutan, mode tampilan) ke UI
+            const searchInput = document.getElementById('explorerSearchInput');
+            if (searchInput) searchInput.value = explorerState.searchQuery;
+            const sortSelect = document.getElementById('explorerSortSelect');
+            if (sortSelect) sortSelect.value = explorerState.sortBy;
+
+            // 5. Gulir ke atas & render seluruh isi halaman galeri
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderExplorerPage();
+        }
+
+        // -------------------------------------------------------------------------
+        // MENUTUP HALAMAN GALERI & KEMBALI KE BERANDA
+        // -------------------------------------------------------------------------
+        function closeCategoryExplorer() {
+            explorerState.isOpen = false;
+            const explorerSection = document.getElementById('section-explorer');
+            if (explorerSection) explorerSection.classList.add('hidden');
+            switchMenu('dashboard'); // Menu 1 (Beranda) aktif kembali seperti semula
+        }
+
+        // -------------------------------------------------------------------------
+        // PENGUJI KECOCOKAN JENIS BERKAS (termasuk kombinasi 'MEDIA')
+        // -------------------------------------------------------------------------
+        function matchExplorerMediaKind(asset, mediaKind) {
+            if (mediaKind === 'ALL') return true;
+            if (mediaKind === 'MEDIA') return ['image', 'video', 'audio'].includes(asset.mediaKind);
+            return asset.mediaKind === mediaKind;
+        }
+
+        // -------------------------------------------------------------------------
+        // MENGHITUNG HASIL SEBELUM DITAMPILKAN (untuk penghitung pada chip)
+        // -------------------------------------------------------------------------
+        function countExplorerAssets(filterFn) {
+            return assetsStore.filter(filterFn).length;
+        }
+
+        // -------------------------------------------------------------------------
+        // MENGAMBIL & MENGURUTKAN ASET SESUAI SELURUH FILTER HALAMAN GALERI
+        // -------------------------------------------------------------------------
+        function getExplorerFilteredAssets() {
+            const query = explorerState.searchQuery.toLowerCase();
+
+            let list = assetsStore.filter(item => {
+                // Filter 1: Kategori utama
+                const matchCategory = explorerState.categoryId === 'ALL' || item.categoryId === explorerState.categoryId;
+
+                // Filter 2: Jenis berkas (media kind)
+                const matchMedia = matchExplorerMediaKind(item, explorerState.mediaKind);
+
+                // Filter 3: Sub-kategori spesifik
+                const matchSub = explorerState.subCategory === 'ALL' || item.subCategory === explorerState.subCategory;
+
+                // Filter 4: Kata kunci pencarian (judul, kode, nama berkas, kategori,
+                // sub-kategori, pemilik, deskripsi, dan tag)
+                const haystack = [
+                    item.title,
+                    item.code,
+                    item.fileName,
+                    item.categoryName,
+                    item.categoryShort,
+                    item.subCategory,
+                    item.owner,
+                    item.description,
+                    (item.tags || []).join(' ')
+                ].join(' ').toLowerCase();
+                const matchQuery = !query || haystack.includes(query);
+
+                return matchCategory && matchMedia && matchSub && matchQuery;
+            });
+
+            // Pengurutan hasil
+            switch (explorerState.sortBy) {
+                case 'newest':    list.sort((a, b) => b.createdAt - a.createdAt); break;
+                case 'oldest':    list.sort((a, b) => a.createdAt - b.createdAt); break;
+                case 'name_asc':  list.sort((a, b) => a.title.localeCompare(b.title)); break;
+                case 'name_desc': list.sort((a, b) => b.title.localeCompare(a.title)); break;
+                case 'size_desc': list.sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0)); break;
+                case 'size_asc':  list.sort((a, b) => (a.fileSize || 0) - (b.fileSize || 0)); break;
+            }
+
+            return list;
+        }
+
+        // -------------------------------------------------------------------------
+        // RENDER UTAMA HALAMAN GALERI (HERO, CHIP, RINGKASAN, GRID/TABEL, MUAT LAGI)
+        // -------------------------------------------------------------------------
+        function renderExplorerPage() {
+            const filtered = getExplorerFilteredAssets();
+            const totalInVault = assetsStore.length;
+            const totalBytes = assetsStore.reduce((sum, a) => sum + (a.fileSize || 0), 0);
+            const uniqueCats = [...new Set(assetsStore.map(a => a.categoryId))];
+
+            // ---- 1. HERO: ikon, judul, dan deskripsi mengikuti kategori terpilih ----
+            const heroIconBox = document.getElementById('explorerHeroIconBox');
+            const heroTitle = document.getElementById('explorerHeroTitle');
+            const heroDesc = document.getElementById('explorerHeroDesc');
+
+            if (explorerState.categoryId === 'ALL') {
+                heroIconBox.innerHTML = '<i data-lucide="layout-grid" class="w-7 h-7 sm:w-8 sm:h-8"></i>';
+                heroTitle.innerHTML = 'Pusat Galeri &amp; <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">Jelajah Kategori Lengkap</span>';
+                heroDesc.textContent = 'Jelajahi seluruh aset digital dalam brankas tanpa batasan tampilan. Gunakan pencarian, pilih kategori, sub-kategori, atau jenis berkas — semua tersaring langsung di halaman ini.';
+            } else {
+                const catMeta = getCategoryMeta(explorerState.categoryId);
+                heroIconBox.innerHTML = `<i data-lucide="${catMeta.icon}" class="w-7 h-7 sm:w-8 sm:h-8"></i>`;
+                heroTitle.innerHTML = `Galeri Lengkap: <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">${escapeHTML(catMeta.shortName)}</span>`;
+                heroDesc.textContent = `Seluruh aset dalam kategori "${catMeta.name}" tampil penuh di halaman ini — lengkap dengan ${catMeta.subs.length} sub-jenis spesifik. Saring lebih jauh berdasarkan jenis berkas atau kata kunci pencarian.`;
+            }
+
+            // ---- 2. STATISTIK RINGKAS PADA HERO ----
+            document.getElementById('explorerStatTotalAssets').textContent = totalInVault;
+            document.getElementById('explorerStatTotalCategories').textContent = `${uniqueCats.length}`;
+            document.getElementById('explorerStatTotalSize').textContent = formatBytes(totalBytes);
+
+            // ---- 3. CHIP JENIS BERKAS ----
+            renderExplorerMediaKindChips();
+
+            // ---- 4. CHIP SEMUA KATEGORI ----
+            renderExplorerCategoryChips();
+
+            // ---- 5. CHIP SUB-KATEGORI (KONTEKSTUAL) ----
+            renderExplorerSubCategoryChips();
+
+            // ---- 6. RINGKASAN FILTER AKTIF ----
+            renderExplorerActiveFilterSummary();
+
+            // ---- 7. BARIS INFO HASIL (MENAMPILKAN X DARI Y) ----
+            const resultMeta = document.getElementById('explorerResultMeta');
+            const shown = Math.min(filtered.length, explorerState.visibleCount);
+            const metaLabel = explorerState.categoryId === 'ALL' ? 'seluruh kategori' : `kategori "${getCategoryMeta(explorerState.categoryId).shortName}"`;
+            resultMeta.innerHTML = `
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-xs sm:text-sm text-slate-600">
+                        Menampilkan <span class="font-bold text-slate-900">${shown}</span> dari
+                        <span class="font-bold text-blue-700">${filtered.length}</span> aset
+                        pada ${metaLabel}
+                        ${explorerState.searchQuery ? ` untuk pencarian <span class="font-bold text-slate-900">"${escapeHTML(explorerState.searchQuery)}"</span>` : ''}
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+                    <i data-lucide="${explorerState.viewMode === 'grid' ? 'layout-grid' : 'table-2'}" class="w-3.5 h-3.5"></i>
+                    <span>Mode ${explorerState.viewMode === 'grid' ? 'Galeri' : 'Tabel Direktori'}</span>
+                </div>
+            `;
+
+            // ---- 8. ISI HASIL: GRID / TABEL / KOSONG ----
+            const gridEl = document.getElementById('explorerAssetsGrid');
+            const tableEl = document.getElementById('explorerAssetsTable');
+            const emptyEl = document.getElementById('explorerEmptyState');
+            const loadMoreWrap = document.getElementById('explorerLoadMoreWrap');
+
+            if (filtered.length === 0) {
+                gridEl.classList.add('hidden');
+                tableEl.classList.add('hidden');
+                emptyEl.classList.remove('hidden');
+                loadMoreWrap.classList.add('hidden');
+            } else {
+                emptyEl.classList.add('hidden');
+                const visibleAssets = filtered.slice(0, explorerState.visibleCount);
+
+                if (explorerState.viewMode === 'grid') {
+                    gridEl.classList.remove('hidden');
+                    tableEl.classList.add('hidden');
+                    gridEl.innerHTML = visibleAssets.map(renderAssetCardHTML).join('');
+                } else {
+                    gridEl.classList.add('hidden');
+                    tableEl.classList.remove('hidden');
+                    tableEl.innerHTML = renderExecutiveTableHTML(visibleAssets);
+                }
+
+                // ---- 9. TOMBOL MUAT LEBIH BANYAK (BATCH 12 ASET PER KLIK) ----
+                if (filtered.length > explorerState.visibleCount) {
+                    loadMoreWrap.classList.remove('hidden');
+                    const remaining = filtered.length - explorerState.visibleCount;
+                    const nextBatch = Math.min(EXPLORER_BATCH_SIZE, remaining);
+                    document.getElementById('explorerLoadMoreText').textContent =
+                        `Masih ada ${remaining} aset lainnya yang belum ditampilkan — muat ${nextBatch} aset berikutnya?`;
+                } else {
+                    loadMoreWrap.classList.add('hidden');
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // CHIP: JENIS BERKAS (SEMUA JENIS SELALU TERSEDIA SEBAGAI PILIHAN)
+        // -------------------------------------------------------------------------
+        function renderExplorerMediaKindChips() {
+            const container = document.getElementById('explorerMediaKindChips');
+            if (!container) return;
+
+            container.innerHTML = EXPLORER_MEDIA_KINDS.map(kind => {
+                const active = explorerState.mediaKind === kind.id;
+                let count;
+
+                if (kind.id === 'ALL') {
+                    count = assetsStore.length;
+                } else if (kind.id === 'MEDIA') {
+                    count = countExplorerAssets(a => ['image', 'video', 'audio'].includes(a.mediaKind));
+                } else {
+                    count = countExplorerAssets(a => a.mediaKind === kind.id);
+                }
+
+                const hasItems = count > 0;
+
+                return `
+                    <button type="button" onclick="setExplorerMediaKind('${kind.id}')"
+                        class="explorer-chip ${!active && !hasItems ? 'is-dimmed' : ''} inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition-all ${
+                            active
+                            ? 'asetku-gradient-bg text-white border-transparent shadow-md'
+                            : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
+                        }">
+                        <i data-lucide="${kind.icon}" class="w-3.5 h-3.5"></i>
+                        <span>${kind.label}</span>
+                        <span class="count-pill px-1.5 py-0.5 rounded-md font-mono text-[10px] ${
+                            active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                        }">${count}</span>
+                    </button>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // CHIP: SEMUA KATEGORI UTAMA (12 KATEGORI SELALU TAMPIL SEBAGAI PILIHAN)
+        // -------------------------------------------------------------------------
+        function renderExplorerCategoryChips() {
+            const container = document.getElementById('explorerCategoryChips');
+            if (!container) return;
+
+            let html = `
+                <button type="button" onclick="setExplorerCategory('ALL')"
+                    class="explorer-chip inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition-all ${
+                        explorerState.categoryId === 'ALL'
+                        ? 'asetku-gradient-bg text-white border-transparent shadow-md'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
+                    }">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    <span>Semua Kategori</span>
+                    <span class="count-pill px-1.5 py-0.5 rounded-md font-mono text-[10px] ${
+                        explorerState.categoryId === 'ALL' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                    }">${assetsStore.length}</span>
+                </button>
+            `;
+
+            html += ASSET_CATEGORIES.map(cat => {
+                const active = explorerState.categoryId === cat.id;
+                const count = countExplorerAssets(a => a.categoryId === cat.id);
+                const hasAssets = count > 0;
+
+                return `
+                    <button type="button" onclick="setExplorerCategory('${cat.id}')"
+                        class="explorer-chip ${!active && !hasAssets ? 'is-dimmed' : ''} inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition-all ${
+                            active
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-md'
+                            : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
+                        }">
+                        <i data-lucide="${cat.icon}" class="w-3.5 h-3.5"></i>
+                        <span>${cat.shortName}</span>
+                        <span class="count-pill px-1.5 py-0.5 rounded-md font-mono text-[10px] ${
+                            active ? 'bg-white/20 text-cyan-300' : 'bg-slate-100 text-slate-500'
+                        }">${count}</span>
+                    </button>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // CHIP: SUB-KATEGORI SPESIFIK (MUNCUL HANYA SAAT KATEGORI TERPILIH)
+        // -------------------------------------------------------------------------
+        function renderExplorerSubCategoryChips() {
+            const panel = document.getElementById('explorerSubCategoryPanel');
+            const container = document.getElementById('explorerSubCategoryChips');
+            const labelEl = document.getElementById('explorerSubCategoryCatLabel');
+            if (!panel || !container) return;
+
+            if (explorerState.categoryId === 'ALL') {
+                panel.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            const catMeta = getCategoryMeta(explorerState.categoryId);
+            panel.classList.remove('hidden');
+            if (labelEl) labelEl.textContent = `"${catMeta.shortName}"`;
+
+            let html = `
+                <button type="button" onclick="setExplorerSubCategory('ALL')"
+                    class="explorer-chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                        explorerState.subCategory === 'ALL'
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }">
+                    <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                    <span>Semua Sub-Jenis (${countExplorerAssets(a => a.categoryId === explorerState.categoryId)})</span>
+                </button>
+            `;
+
+            html += catMeta.subs.map(sub => {
+                const active = explorerState.subCategory === sub;
+                const count = countExplorerAssets(a => a.categoryId === explorerState.categoryId && a.subCategory === sub);
+
+                return `
+                    <button type="button" onclick="setExplorerSubCategory('${sub.replace(/'/g, "\\'")}')"
+                        class="explorer-chip ${!active && count === 0 ? 'is-dimmed' : ''} inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                            active
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }">
+                        <span>${escapeHTML(sub)}</span>
+                        <span class="count-pill px-1.5 py-0.5 rounded-md font-mono text-[10px] ${
+                            active ? 'bg-white/20 text-cyan-300' : 'bg-slate-100 text-slate-500'
+                        }">${count}</span>
+                    </button>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // RINGKASAN FILTER AKTIF (PILL DENGAN TOMBOL X UNTUK MELEPAS FILTER)
+        // -------------------------------------------------------------------------
+        function renderExplorerActiveFilterSummary() {
+            const container = document.getElementById('explorerActiveFilterSummary');
+            if (!container) return;
+
+            const pills = [];
+
+            // Pill kategori
+            if (explorerState.categoryId !== 'ALL') {
+                const catMeta = getCategoryMeta(explorerState.categoryId);
+                pills.push(`
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 font-semibold">
+                        <i data-lucide="${catMeta.icon}" class="w-3 h-3"></i>
+                        <span>Kategori: ${catMeta.shortName}</span>
+                        <button type="button" onclick="setExplorerCategory('ALL')" class="hover:text-blue-950 font-mono font-bold">×</button>
+                    </span>
+                `);
+            }
+
+            // Pill jenis berkas
+            if (explorerState.mediaKind !== 'ALL') {
+                const kindMeta = EXPLORER_MEDIA_KINDS.find(m => m.id === explorerState.mediaKind);
+                pills.push(`
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-50 border border-cyan-200 text-cyan-800 font-semibold">
+                        <i data-lucide="${kindMeta.icon}" class="w-3 h-3"></i>
+                        <span>Jenis: ${kindMeta.label}</span>
+                        <button type="button" onclick="setExplorerMediaKind('ALL')" class="hover:text-cyan-950 font-mono font-bold">×</button>
+                    </span>
+                `);
+            }
+
+            // Pill sub-kategori
+            if (explorerState.subCategory !== 'ALL') {
+                pills.push(`
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 font-semibold">
+                        <i data-lucide="tags" class="w-3 h-3"></i>
+                        <span>Sub: ${escapeHTML(explorerState.subCategory)}</span>
+                        <button type="button" onclick="setExplorerSubCategory('ALL')" class="hover:text-indigo-950 font-mono font-bold">×</button>
+                    </span>
+                `);
+            }
+
+            // Pill kata kunci pencarian
+            if (explorerState.searchQuery) {
+                pills.push(`
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 text-white font-semibold">
+                        <i data-lucide="search" class="w-3 h-3"></i>
+                        <span>Pencarian: "${escapeHTML(explorerState.searchQuery)}"</span>
+                        <button type="button" onclick="clearExplorerSearch()" class="hover:text-cyan-300 font-mono font-bold">×</button>
+                    </span>
+                `);
+            }
+
+            container.innerHTML = pills.length > 0
+                ? `<span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mr-1">Filter Aktif:</span>` + pills.join('')
+                : `<span class="text-[11px] font-semibold text-slate-400">Belum ada filter aktif — menampilkan seluruh brankas.</span>`;
+
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // HANDLER AKSI PENGGUNA PADA HALAMAN GALERI
+        // -------------------------------------------------------------------------
+        function setExplorerCategory(catId) {
+            explorerState.categoryId = ASSET_CATEGORIES.some(c => c.id === catId) ? catId : 'ALL';
+            explorerState.subCategory = 'ALL';           // Reset sub-kategori saat ganti kategori
+            explorerState.visibleCount = EXPLORER_BATCH_SIZE; // Reset tampilan batch
+            renderExplorerPage();
+        }
+
+        function setExplorerMediaKind(kindId) {
+            explorerState.mediaKind = EXPLORER_MEDIA_KINDS.some(m => m.id === kindId) ? kindId : 'ALL';
+            explorerState.visibleCount = EXPLORER_BATCH_SIZE;
+            renderExplorerPage();
+        }
+
+        function setExplorerSubCategory(subName) {
+            explorerState.subCategory = subName;
+            explorerState.visibleCount = EXPLORER_BATCH_SIZE;
+            renderExplorerPage();
+        }
+
+        function handleExplorerSearchInput() {
+            const input = document.getElementById('explorerSearchInput');
+            explorerState.searchQuery = input ? input.value.trim() : '';
+            explorerState.visibleCount = EXPLORER_BATCH_SIZE;
+            renderExplorerPage();
+        }
+
+        function clearExplorerSearch() {
+            const input = document.getElementById('explorerSearchInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            explorerState.searchQuery = '';
+            explorerState.visibleCount = EXPLORER_BATCH_SIZE;
+            renderExplorerPage();
+        }
+
+        function handleExplorerSortChange(value) {
+            explorerState.sortBy = value;
+            renderExplorerPage();
+        }
+
+        function setExplorerViewMode(mode) {
+            explorerState.viewMode = mode === 'table' ? 'table' : 'grid';
+
+            const gridBtn = document.getElementById('explorerViewGridBtn');
+            const tableBtn = document.getElementById('explorerViewTableBtn');
+
+            if (explorerState.viewMode === 'grid') {
+                gridBtn.className = 'p-2.5 rounded-lg asetku-gradient-bg text-white shadow-sm transition-all';
+                tableBtn.className = 'p-2.5 rounded-lg text-slate-300 hover:text-white transition-all';
+            } else {
+                tableBtn.className = 'p-2.5 rounded-lg asetku-gradient-bg text-white shadow-sm transition-all';
+                gridBtn.className = 'p-2.5 rounded-lg text-slate-300 hover:text-white transition-all';
+            }
+
+            renderExplorerPage();
+        }
+
+        function resetExplorerFilters() {
+            explorerState.categoryId = 'ALL';
+            explorerState.mediaKind = 'ALL';
+            explorerState.subCategory = 'ALL';
+            explorerState.searchQuery = '';
+            explorerState.sortBy = 'newest';
+            explorerState.visibleCount = EXPLORER_BATCH_SIZE;
+
+            const searchInput = document.getElementById('explorerSearchInput');
+            if (searchInput) searchInput.value = '';
+            const sortSelect = document.getElementById('explorerSortSelect');
+            if (sortSelect) sortSelect.value = 'newest';
+
+            renderExplorerPage();
+            showToast('Filter Direset', 'Seluruh filter halaman galeri telah dikembalikan ke semula.', 'info');
+        }
+
+        function explorerLoadMore() {
+            explorerState.visibleCount += EXPLORER_BATCH_SIZE;
+            renderExplorerPage();
         }
 
         // =========================================================================
